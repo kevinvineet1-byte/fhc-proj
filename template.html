@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Horizon 3.0 — FHC</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+  :root{
+    --pink:#FF1F7A;
+    --yellow:#FFD400;
+    --blue:#2FB8FF;
+    --green:#3ED985;
+    --black:#0B0B0F;
+    --white:#F5F0E8;
+    --paper:#111116;
+  }
+
+  *{box-sizing:border-box;}
+  html{ -webkit-font-smoothing:none; image-rendering:pixelated; }
+
+  body{
+    margin:0;
+    background:var(--black);
+    background-image:
+      radial-gradient(circle at 2px 2px, rgba(255,255,255,0.04) 1px, transparent 0);
+    background-size:22px 22px;
+    color:var(--white);
+    font-family:'VT323', monospace;
+    font-size:20px;
+    line-height:1.5;
+  }
+
+  .pixel-font{ font-family:'Press Start 2P', monospace; }
+
+  /* ---------- outer pixel frame ---------- */
+  .frame{
+    border:6px solid var(--pink);
+    margin:10px;
+    position:relative;
+    box-shadow:
+      0 0 0 3px var(--black),
+      0 0 0 9px var(--pink),
+      6px 6px 0 9px rgba(255,31,122,0.25);
+  }
+  .frame::before{
+    content:"";
+    position:absolute; inset:-6px;
+    border:6px dashed rgba(255,212,0,0.0);
+    pointer-events:none;
+  }
+
+  /* ---------- nav ---------- */
+  header{
+    background:var(--black);
+    border-bottom:5px solid var(--pink);
+    padding:16px 26px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:14px;
+  }
+  .logo-box{
+    border:4px solid var(--pink);
+    background:var(--black);
+    padding:8px 14px;
+    box-shadow: 4px 4px 0 var(--pink);
+  }
+  .logo-box .pixel-font{
+    color:var(--pink);
+    font-size:22px;
+    letter-spacing:1px;
+  }
+  .brand-sub{
+    font-size:15px;
+    letter-spacing:2px;
+    color:var(--white);
+    opacity:0.85;
+    text-transform:uppercase;
+  }
+  nav.links{
+    display:flex; gap:22px; flex-wrap:wrap;
+    font-size:17px;
+    letter-spacing:1px;
+  }
+  nav.links a{
+    color:var(--white);
+    text-decoration:none;
+    text-transform:uppercase;
+    opacity:0.85;
+    padding:4px 2px;
+    border-bottom:3px solid transparent;
+  }
+  nav.links a:hover{ opacity:1; border-bottom:3px solid var(--yellow); }
+  nav.links a.active{
+    background:var(--pink);
+    color:var(--black);
+    padding:6px 10px;
+    border:3px solid var(--black);
+  }
+
+  /* ---------- back button ---------- */
+  .backbar{
+    padding:18px 26px 0;
+  }
+  .back-btn{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--black);
+    border:3px solid var(--green);
+    color:var(--green);
+    padding:8px 14px;
+    text-decoration:none;
+    font-size:15px;
+    letter-spacing:1px;
+    box-shadow:3px 3px 0 var(--green);
+  }
+  .back-btn:hover{ transform:translate(-1px,-1px); box-shadow:4px 4px 0 var(--green); }
+
+  /* ---------- breadcrumb / eyebrow ---------- */
+  .eyebrow{
+    padding:22px 26px 0;
+    display:flex; align-items:center; gap:10px;
+    font-size:15px;
+    letter-spacing:3px;
+    color:var(--yellow);
+    text-transform:uppercase;
+  }
+  .eyebrow .dot{
+    width:8px;height:8px;background:var(--yellow);
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:18px 26px 30px;
+    display:grid;
+    grid-template-columns:1.15fr 0.85fr;
+    gap:34px;
+    align-items:center;
+    background:
+      linear-gradient(180deg, rgba(255,31,122,0.06), transparent 60%);
+    border-bottom:5px solid var(--pink);
+  }
+  @media (max-width:860px){
+    .hero{grid-template-columns:1fr;}
+  }
+
+  .badges{
+    display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;
+  }
+  .badge{
+    font-family:'Press Start 2P', monospace;
+    font-size:11px;
+    padding:8px 10px;
+    border:3px solid var(--black);
+    letter-spacing:0px;
+  }
+  .badge.live{ background:var(--green); color:var(--black); }
+  .badge.type{ background:var(--yellow); color:var(--black); }
+  .badge.free{ background:var(--white); color:var(--black); }
+
+  h1.title{
+    font-size:52px;
+    line-height:1.02;
+    margin:0 0 6px;
+    color:var(--white);
+    text-shadow:
+      4px 4px 0 var(--pink);
+    letter-spacing:1px;
+  }
+  @media (max-width:860px){ h1.title{font-size:38px;} }
+
+  .title-accent{ color:var(--yellow); }
+
+  .tagline{
+    font-size:23px;
+    color:var(--blue);
+    margin:10px 0 20px;
+    letter-spacing:1px;
+  }
+
+  .hero-desc{
+    font-size:20px;
+    opacity:0.9;
+    max-width:56ch;
+    margin-bottom:26px;
+  }
+
+  .cta-row{ display:flex; gap:16px; flex-wrap:wrap; }
+  .btn{
+    font-family:'Press Start 2P', monospace;
+    font-size:14px;
+    padding:16px 22px;
+    text-decoration:none;
+    border:3px solid var(--black);
+    display:inline-flex; align-items:center; gap:10px;
+    cursor:pointer;
+  }
+  .btn-primary{
+    background:var(--pink); color:var(--black);
+    box-shadow:5px 5px 0 var(--black);
+  }
+  .btn-primary:hover{ transform:translate(-2px,-2px); box-shadow:7px 7px 0 var(--black); }
+  .btn-ghost{
+    background:var(--black); color:var(--yellow);
+    border:3px solid var(--yellow);
+    box-shadow:5px 5px 0 var(--yellow);
+  }
+  .btn-ghost:hover{ transform:translate(-2px,-2px); box-shadow:7px 7px 0 var(--yellow); }
+
+  /* ---------- hero art ---------- */
+  .hero-art{
+    position:relative;
+    border:4px solid var(--blue);
+    background:
+      repeating-linear-gradient(45deg, #0d1b2a, #0d1b2a 10px, #0a1622 10px, #0a1622 20px);
+    padding:30px;
+    box-shadow:6px 6px 0 var(--blue);
+    text-align:center;
+  }
+  .hero-art .glyph{ font-size:70px; }
+  .hero-art .console{
+    margin-top:14px;
+    background:var(--black);
+    border:3px solid var(--green);
+    color:var(--green);
+    font-size:16px;
+    padding:12px;
+    text-align:left;
+  }
+  .hero-art .console span{ display:block; }
+  .blink{ animation:blink 1s steps(1) infinite; }
+  @keyframes blink{ 50%{opacity:0;} }
+
+  /* ---------- info strip ---------- */
+  .infostrip{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    border-bottom:5px solid var(--pink);
+  }
+  @media (max-width:760px){ .infostrip{grid-template-columns:repeat(2,1fr);} }
+  .info-cell{
+    padding:22px 20px;
+    border-right:3px solid rgba(255,255,255,0.12);
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .info-cell:last-child{ border-right:none; }
+  .info-label{
+    font-family:'Press Start 2P', monospace;
+    font-size:11px;
+    color:var(--yellow);
+    letter-spacing:1px;
+  }
+  .info-value{ font-size:21px; }
+  .info-icon{ font-size:22px; }
+
+  /* ---------- body sections ---------- */
+  .section{
+    padding:40px 26px;
+    border-bottom:5px solid var(--pink);
+  }
+  .section:last-of-type{ border-bottom:none; }
+  .section-head{
+    display:flex; align-items:center; gap:12px;
+    margin-bottom:22px;
+  }
+  .section-head .pixel-font{
+    font-size:20px;
+    color:var(--white);
+  }
+  .section-head .bracket{ color:var(--pink); }
+
+  .about-grid{
+    display:grid;
+    grid-template-columns:1.3fr 0.7fr;
+    gap:32px;
+  }
+  @media (max-width:860px){ .about-grid{grid-template-columns:1fr;} }
+
+  .about-text{ font-size:21px; opacity:0.92; }
+  .about-text p{ margin:0 0 16px; }
+  .highlight{ background:var(--pink); color:var(--black); padding:0 4px; }
+  .highlight.y{ background:var(--yellow); }
+  .highlight.g{ background:var(--green); }
+
+  .side-card{
+    background:var(--paper);
+    border:3px solid var(--yellow);
+    box-shadow:5px 5px 0 var(--yellow);
+    padding:20px;
+  }
+  .side-card h3{
+    font-family:'Press Start 2P', monospace;
+    font-size:14px;
+    color:var(--yellow);
+    margin:0 0 14px;
+  }
+  .side-card ul{ margin:0; padding-left:22px; }
+  .side-card li{ margin-bottom:10px; font-size:19px; }
+
+  /* format / rules panel */
+  .panel-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+  }
+  @media (max-width:860px){ .panel-grid{grid-template-columns:1fr;} }
+  .panel{
+    background:var(--paper);
+    border:3px solid var(--blue);
+    box-shadow:5px 5px 0 var(--blue);
+    padding:20px;
+  }
+  .panel .num{
+    font-family:'Press Start 2P', monospace;
+    font-size:26px;
+    color:var(--blue);
+    margin-bottom:10px;
+  }
+  .panel h4{
+    font-family:'Press Start 2P', monospace;
+    font-size:14px;
+    margin:0 0 10px;
+    color:var(--white);
+  }
+  .panel p{ margin:0; font-size:18px; opacity:0.85; }
+
+  /* prizes */
+  .prize-row{
+    display:flex; gap:20px; flex-wrap:wrap;
+  }
+  .prize{
+    flex:1; min-width:200px;
+    background:var(--black);
+    border:3px solid var(--black);
+    padding:22px;
+    text-align:center;
+    position:relative;
+  }
+  .prize.gold{ border-color:var(--yellow); box-shadow:5px 5px 0 var(--yellow); }
+  .prize.silver{ border-color:#C9C9C9; box-shadow:5px 5px 0 #C9C9C9; }
+  .prize.bronze{ border-color:var(--pink); box-shadow:5px 5px 0 var(--pink); }
+  .prize .medal{ font-size:38px; margin-bottom:10px; }
+  .prize .place{
+    font-family:'Press Start 2P', monospace;
+    font-size:12px;
+    letter-spacing:1px;
+    margin-bottom:8px;
+  }
+  .prize.gold .place{ color:var(--yellow); }
+  .prize.silver .place{ color:#C9C9C9; }
+  .prize.bronze .place{ color:var(--pink); }
+  .prize .amount{ font-size:26px; }
+
+  /* timeline */
+  .timeline{
+    display:flex; flex-direction:column; gap:0;
+  }
+  .tl-item{
+    display:grid;
+    grid-template-columns:110px 24px 1fr;
+    align-items:start;
+    gap:0;
+  }
+  .tl-time{
+    font-family:'Press Start 2P', monospace;
+    font-size:12px;
+    color:var(--green);
+    padding-top:4px;
+  }
+  .tl-line{
+    display:flex; flex-direction:column; align-items:center;
+    height:100%;
+  }
+  .tl-dot{
+    width:14px;height:14px;
+    background:var(--pink);
+    border:3px solid var(--black);
+    box-shadow:0 0 0 2px var(--pink);
+  }
+  .tl-bar{
+    flex:1;
+    width:3px;
+    background:var(--pink);
+    min-height:34px;
+  }
+  .tl-item:last-child .tl-bar{ display:none; }
+  .tl-content{ padding:0 0 30px 18px; }
+  .tl-content h4{
+    margin:0 0 4px;
+    font-size:22px;
+    color:var(--white);
+  }
+  .tl-content p{ margin:0; font-size:18px; opacity:0.8; }
+
+  /* register CTA band */
+  .cta-band{
+    background:
+      repeating-linear-gradient(-45deg, var(--yellow), var(--yellow) 18px, #E6BF00 18px, #E6BF00 36px);
+    border-bottom:5px solid var(--pink);
+    padding:36px 26px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:20px; flex-wrap:wrap;
+    color:var(--black);
+  }
+  .cta-band-text .pixel-font{ font-size:22px; margin-bottom:8px; display:block; }
+  .cta-band-text p{ margin:0; font-size:19px; font-family:'VT323',monospace; }
+  .cta-band .btn-primary{ box-shadow:5px 5px 0 var(--black); }
+
+  /* footer terminal */
+  footer{
+    background:var(--black);
+    padding:20px 26px;
+  }
+  .terminal{
+    border:3px solid var(--green);
+    padding:14px 18px;
+    color:var(--green);
+    font-size:17px;
+    max-width:520px;
+    margin:0 auto 18px;
+  }
+  .terminal div{ margin-bottom:4px; }
+  .foot-bottom{
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:12px;
+    font-size:15px;
+    opacity:0.7;
+    text-transform:uppercase;
+    letter-spacing:1px;
+  }
+
+  ::selection{ background:var(--pink); color:var(--black); }
+</style>
+</head>
+<body>
+
+<div class="frame">
+
+  <header>
+    <div class="brand">
+      <div class="logo-box"><span class="pixel-font">FHC</span></div>
+      <div>
+        <div class="brand-sub">FULL FISAT</div>
+        <div class="brand-sub">HORIZON CLUB</div>
+      </div>
+    </div>
+    <nav class="links">
+      <a href="#">▶ HOME</a>
+      <a href="#" class="active">EVENTS</a>
+      <a href="#">PROJECTS</a>
+      <a href="#">TEAM</a>
+      <a href="#">GALLERY</a>
+      <a href="#">ABOUT</a>
+      <a href="#">JOIN</a>
+    </nav>
+  </header>
+
+  <div class="backbar">
+    <a href="#" class="back-btn">← BACK TO EVENTS</a>
+  </div>
+
+  <div class="eyebrow">
+    <span class="dot"></span> FHC EVENTS &amp; PROGRAMS
+  </div>
+
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="badges">
+        <span class="badge live">● UPCOMING</span>
+        <span class="badge type">HACKATHON</span>
+        <span class="badge free">FREE ENTRY</span>
+      </div>
+      <h1 class="title">CODE<br><span class="title-accent">HORIZON 3.0</span></h1>
+      <div class="tagline">// SOLVE. CODE. WIN. REPEAT.</div>
+      <p class="hero-desc">
+        Intra-college coding competition hosted by FHC. 24 hours of code, coffee
+        and collaboration — build real solutions to real problems, ship something
+        you're proud of, and battle it out for the top spot on the leaderboard.
+      </p>
+      <div class="cta-row">
+        <a href="#" class="btn btn-primary">▶ REGISTER NOW</a>
+        <a href="#" class="btn btn-ghost">VIEW RULEBOOK</a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="glyph">🏆</div>
+      <div class="console">
+        <span>&gt; EVENT_ID: FHC-CH3</span>
+        <span>&gt; STATUS: REGISTRATION_OPEN</span>
+        <span>&gt; SLOTS_LEFT: 42</span>
+        <span>&gt; LOADING BRACKET<span class="blink">_</span></span>
+      </div>
+    </div>
+  </section>
+
+  <div class="infostrip">
+    <div class="info-cell">
+      <span class="info-icon">📅</span>
+      <span class="info-label">DATE</span>
+      <span class="info-value">JUL 10, 2026</span>
+    </div>
+    <div class="info-cell">
+      <span class="info-icon">⏱</span>
+      <span class="info-label">DURATION</span>
+      <span class="info-value">24 HOURS</span>
+    </div>
+    <div class="info-cell">
+      <span class="info-icon">📍</span>
+      <span class="info-label">VENUE</span>
+      <span class="info-value">FISAT CAMPUS</span>
+    </div>
+    <div class="info-cell">
+      <span class="info-icon">👥</span>
+      <span class="info-label">TEAM SIZE</span>
+      <span class="info-value">2 – 4 MEMBERS</span>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-head">
+      <span class="pixel-font"><span class="bracket">//</span> ABOUT THE EVENT</span>
+    </div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          <strong>Code Horizon 3.0</strong> is FHC's flagship intra-college hackathon —
+          a full day and night where builders, thinkers and dreamers come together to
+          turn ideas into working prototypes. Whether you're deep into
+          <span class="highlight">WEB DEVELOPMENT</span>, exploring
+          <span class="highlight y">ARTIFICIAL INTELLIGENCE</span>, or just love the
+          thrill of shipping fast, this is your arena.
+        </p>
+        <p>
+          Teams get 24 hours, a problem statement, and full access to mentors from
+          the FHC core and technical teams. Expect surprise checkpoints, snack
+          runs, and a demo floor packed with <span class="highlight g">real, working builds</span>
+          by sunrise.
+        </p>
+      </div>
+      <div class="side-card">
+        <h3>QUICK FACTS</h3>
+        <ul>
+          <li>Open to all years &amp; branches</li>
+          <li>Bring your own laptop</li>
+          <li>Mentorship rounds every 4 hrs</li>
+          <li>Food &amp; beverages provided</li>
+          <li>Certificates for all participants</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <span class="pixel-font"><span class="bracket">//</span> EVENT FORMAT</span>
+    </div>
+    <div class="panel-grid">
+      <div class="panel">
+        <div class="num">01</div>
+        <h4>REGISTER &amp; TEAM UP</h4>
+        <p>Form a squad of 2–4 and lock in your spot before slots run out.</p>
+      </div>
+      <div class="panel">
+        <div class="num">02</div>
+        <h4>BUILD FOR 24HRS</h4>
+        <p>Problem statements drop at kickoff. Code, test, and iterate non-stop.</p>
+      </div>
+      <div class="panel">
+        <div class="num">03</div>
+        <h4>DEMO &amp; JUDGING</h4>
+        <p>Pitch your build to the judging panel and the FHC community.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <span class="pixel-font"><span class="bracket">//</span> SCHEDULE</span>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-time">09:00 AM</div>
+        <div class="tl-line"><div class="tl-dot"></div><div class="tl-bar"></div></div>
+        <div class="tl-content">
+          <h4>CHECK-IN &amp; KICKOFF</h4>
+          <p>Team check-in, opening ceremony, problem statement reveal.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">11:00 AM</div>
+        <div class="tl-line"><div class="tl-dot"></div><div class="tl-bar"></div></div>
+        <div class="tl-content">
+          <h4>HACKING BEGINS</h4>
+          <p>The 24-hour clock starts. Mentors circulate every 4 hours.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">02:00 AM</div>
+        <div class="tl-line"><div class="tl-dot"></div><div class="tl-bar"></div></div>
+        <div class="tl-content">
+          <h4>MIDNIGHT CHECKPOINT</h4>
+          <p>Progress check-in, snacks, and a surprise lightning challenge.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">11:00 AM</div>
+        <div class="tl-line"><div class="tl-dot"></div><div class="tl-bar"></div></div>
+        <div class="tl-content">
+          <h4>SUBMISSIONS CLOSE</h4>
+          <p>Freeze your code. Prep your demo for the judging floor.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">01:00 PM</div>
+        <div class="tl-line"><div class="tl-dot"></div></div>
+        <div class="tl-content">
+          <h4>DEMOS &amp; RESULTS</h4>
+          <p>Live demos, judging, and the Code Horizon 3.0 winners announced.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <span class="pixel-font"><span class="bracket">//</span> PRIZES</span>
+    </div>
+    <div class="prize-row">
+      <div class="prize gold">
+        <div class="medal">🥇</div>
+        <div class="place">1ST PLACE</div>
+        <div class="amount">₹15,000</div>
+      </div>
+      <div class="prize silver">
+        <div class="medal">🥈</div>
+        <div class="place">2ND PLACE</div>
+        <div class="amount">₹8,000</div>
+      </div>
+      <div class="prize bronze">
+        <div class="medal">🥉</div>
+        <div class="place">3RD PLACE</div>
+        <div class="amount">₹5,000</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-band">
+    <div class="cta-band-text">
+      <span class="pixel-font">READY TO LEVEL UP?</span>
+      <p>Squad up and claim your spot at Code Horizon 3.0 before slots close.</p>
+    </div>
+    <a href="#" class="btn btn-primary">▶ REGISTER NOW</a>
+  </div>
+
+  <footer>
+    <div class="terminal">
+      <div>&gt; FHC_TERMINAL</div>
+      <div>&gt; Loading event: CODE_HORIZON_3.0...</div>
+      <div>&gt; Registration status: OPEN<span class="blink">_</span></div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 FULL FISAT HORIZON CLUB</span>
+      <span>MADE WITH 8-BIT LOVE ♥</span>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
