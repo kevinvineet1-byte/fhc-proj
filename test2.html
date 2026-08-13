@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Events — FHC | Full FISAT Horizon Club</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+:root{
+  --pink:#FF1B7A;
+  --pink-deep:#E4106A;
+  --yellow:#FFC93C;
+  --black:#0A0A0A;
+  --panel:#121212;
+  --cream:#F4EFE3;
+  --blue:#3AA6FF;
+  --green:#39C46B;
+  --purple:#9B6BFF;
+  --red:#FF5C5C;
+  --grey:#8B8B8B;
+  --pixel-font:'Press Start 2P', monospace;
+  --mono-font:'VT323', monospace;
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+
+html{ image-rendering:pixelated; scroll-behavior:smooth; }
+
+body{
+  background:var(--black);
+  color:var(--cream);
+  font-family:var(--mono-font);
+  font-size:19px;
+  line-height:1.5;
+}
+
+/* ---------- outer frame ---------- */
+.frame{
+  border:6px solid var(--pink);
+  min-height:100vh;
+  position:relative;
+}
+.frame::before{
+  content:"";
+  position:absolute; inset:10px;
+  border:2px dashed rgba(255,27,122,.35);
+  pointer-events:none;
+  z-index:1;
+}
+
+img, svg{ image-rendering:pixelated; }
+
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+
+.pixel-font{ font-family:var(--pixel-font); }
+
+/* ---------- header ---------- */
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  padding:16px 28px;
+  background:var(--black);
+  border-bottom:4px solid var(--pink);
+  position:sticky;
+  top:0;
+  z-index:50;
+  flex-wrap:wrap;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.brand-badge{
+  border:3px solid var(--pink);
+  background:var(--black);
+  padding:8px 14px;
+  box-shadow:3px 3px 0 var(--pink);
+}
+.brand-badge .fhc{
+  font-family:var(--pixel-font);
+  color:var(--pink);
+  font-size:22px;
+  letter-spacing:1px;
+}
+.brand-sub{
+  font-family:var(--pixel-font);
+  font-size:9px;
+  color:var(--cream);
+  line-height:1.6;
+  letter-spacing:.5px;
+}
+
+nav{
+  display:flex;
+  align-items:center;
+  gap:26px;
+  font-family:var(--pixel-font);
+  font-size:11px;
+  flex-wrap:wrap;
+}
+nav a{
+  color:var(--cream);
+  padding:6px 4px;
+  position:relative;
+  white-space:nowrap;
+}
+nav a:hover{ color:var(--yellow); }
+nav a.play::before{
+  content:"▶ ";
+  color:var(--pink);
+}
+nav a.active{
+  background:var(--black);
+  border:2px solid var(--cream);
+  padding:8px 12px;
+}
+.join-btn{
+  font-family:var(--pixel-font);
+  font-size:11px;
+  background:var(--cream);
+  color:var(--black);
+  border:2px solid var(--cream);
+  padding:10px 18px;
+}
+.join-btn:hover{ background:var(--yellow); border-color:var(--yellow); }
+
+/* ---------- hero ---------- */
+.hero{
+  position:relative;
+  padding:56px 40px 46px;
+  overflow:hidden;
+  border-bottom:6px solid var(--pink);
+}
+.hero-stars{
+  position:absolute; inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+.star{
+  position:absolute;
+  font-size:14px;
+  opacity:.8;
+}
+.hero-inner{ position:relative; z-index:2; max-width:760px; }
+.eyebrow{
+  font-family:var(--pixel-font);
+  font-size:11px;
+  color:var(--yellow);
+  letter-spacing:2px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:20px;
+}
+.eyebrow .bolt{ color:var(--pink); }
+.eyebrow .line{
+  flex:1;
+  height:2px;
+  background:repeating-linear-gradient(90deg, var(--yellow) 0 6px, transparent 6px 12px);
+  max-width:120px;
+}
+h1.hero-title{
+  font-family:'Georgia', 'Times New Roman', serif;
+  font-style:italic;
+  font-weight:700;
+  font-size:56px;
+  line-height:1.05;
+  color:var(--cream);
+  margin-bottom:6px;
+}
+h1.hero-title .accent{
+  color:var(--pink);
+  display:block;
+}
+.hero-desc{
+  font-family:var(--mono-font);
+  font-size:22px;
+  color:#C9C9C9;
+  max-width:520px;
+  margin-top:14px;
+}
+
+/* mascot corner */
+.mascot-wrap{
+  position:absolute;
+  right:36px;
+  top:34px;
+  z-index:2;
+  text-align:right;
+}
+.speech-bubble{
+  display:inline-block;
+  background:var(--cream);
+  color:var(--black);
+  font-family:var(--pixel-font);
+  font-size:9px;
+  padding:8px 10px;
+  border:2px solid var(--black);
+  margin-bottom:8px;
+  position:relative;
+}
+
+/* ---------- filter tabs ---------- */
+.filters{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:26px 40px 0;
+}
+.filter-pill{
+  font-family:var(--pixel-font);
+  font-size:10px;
+  padding:11px 16px;
+  border:2px solid var(--cream);
+  background:var(--black);
+  color:var(--cream);
+  letter-spacing:.5px;
+}
+.filter-pill.active{
+  background:var(--pink);
+  border-color:var(--pink);
+  color:var(--black);
+  box-shadow:3px 3px 0 var(--pink-deep);
+}
+.filter-pill:hover:not(.active){
+  border-color:var(--yellow);
+  color:var(--yellow);
+}
+
+/* status toggle (upcoming/past) like reference shot */
+.status-toggle{
+  display:inline-flex;
+  border:2px solid var(--cream);
+  padding:4px;
+  gap:4px;
+  margin:22px 40px 0;
+}
+.status-toggle button{
+  font-family:var(--pixel-font);
+  font-size:10px;
+  padding:9px 18px;
+  background:transparent;
+  border:none;
+  color:var(--cream);
+}
+.status-toggle button.active{
+  background:var(--yellow);
+  color:var(--black);
+}
+
+/* ---------- grid ---------- */
+.events-section{
+  padding:34px 40px 10px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:26px;
+}
+
+.card{
+  background:var(--panel);
+  border:2px solid var(--pink);
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  transition:transform .12s ease;
+}
+.card:hover{
+  transform:translate(-3px,-3px);
+  box-shadow:6px 6px 0 var(--pink);
+}
+.card-media{
+  position:relative;
+  aspect-ratio:16/10;
+  background:linear-gradient(135deg,#1b1b1b,#2a2a2a);
+  overflow:hidden;
+  border-bottom:2px solid var(--pink);
+}
+.card-media img{
+  width:100%; height:100%; object-fit:cover;
+  display:block;
+}
+.card-media .media-fallback{
+  width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--pixel-font);
+  font-size:11px;
+  color:#555;
+  background:
+    repeating-linear-gradient(45deg, #161616 0 10px, #1d1d1d 10px 20px);
+}
+.tag{
+  position:absolute;
+  top:10px; left:10px;
+  font-family:var(--pixel-font);
+  font-size:9px;
+  padding:6px 9px;
+  border:2px solid var(--black);
+  letter-spacing:.5px;
+  z-index:3;
+}
+.tag.workshop{ background:var(--blue); color:var(--black); }
+.tag.hackathon{ background:var(--green); color:var(--black); }
+.tag.talk{ background:var(--yellow); color:var(--black); }
+.tag.event{ background:var(--pink); color:var(--black); }
+.tag.social{ background:var(--purple); color:var(--cream); }
+
+.card-icon{
+  position:absolute;
+  top:8px; right:8px;
+  width:30px; height:30px;
+  background:var(--black);
+  border:2px solid var(--cream);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px;
+  z-index:3;
+}
+
+.status-pill{
+  position:absolute;
+  bottom:10px; left:10px;
+  font-family:var(--pixel-font);
+  font-size:8px;
+  padding:5px 8px;
+  border:2px solid var(--black);
+  display:flex; align-items:center; gap:5px;
+  z-index:3;
+}
+.status-pill .dot{
+  width:6px; height:6px;
+  border-radius:50%;
+  display:inline-block;
+}
+.status-pill.live{ background:var(--green); color:var(--black); }
+.status-pill.live .dot{ background:#0A0A0A; }
+.status-pill.upcoming{ background:var(--cream); color:var(--black); }
+.status-pill.upcoming .dot{ background:var(--pink); }
+.status-pill.concluded{ background:#3a3a3a; color:#ccc; }
+.status-pill.concluded .dot{ background:var(--red); }
+
+.card-body{
+  padding:18px 18px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  flex:1;
+}
+.card-title{
+  font-family:'Georgia', serif;
+  font-style:italic;
+  font-weight:700;
+  font-size:22px;
+  color:var(--cream);
+}
+.card-desc{
+  font-family:var(--mono-font);
+  font-size:17px;
+  color:#B8B8B8;
+  line-height:1.4;
+  flex:1;
+}
+.card-meta{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-family:var(--mono-font);
+  font-size:16px;
+  color:#9c9c9c;
+  border-top:1px dashed #333;
+  padding-top:10px;
+  margin-top:2px;
+}
+.card-meta .row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.card-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:6px;
+}
+.price-pill{
+  font-family:var(--pixel-font);
+  font-size:9px;
+  padding:6px 10px;
+  border:2px solid var(--yellow);
+  color:var(--yellow);
+}
+.price-pill.free{ border-color:var(--green); color:var(--green); }
+.details-btn{
+  font-family:var(--pixel-font);
+  font-size:10px;
+  background:var(--black);
+  color:var(--cream);
+  border:2px solid var(--cream);
+  padding:9px 14px;
+  flex:1;
+  text-align:center;
+}
+.details-btn:hover{
+  background:var(--pink);
+  border-color:var(--pink);
+  color:var(--black);
+}
+
+/* empty state */
+.empty-state{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:14px;
+  padding:70px 20px;
+  border:2px dashed var(--grey);
+  margin-top:10px;
+}
+.empty-state .glyph{ font-size:34px; }
+.empty-state h3{
+  font-family:var(--pixel-font);
+  font-size:14px;
+  color:var(--cream);
+}
+.empty-state p{
+  font-family:var(--mono-font);
+  font-size:18px;
+  color:var(--grey);
+  max-width:360px;
+}
+
+/* pagination */
+.pagination{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  padding:40px 40px 10px;
+  font-family:var(--pixel-font);
+  font-size:11px;
+}
+.pagination button{
+  background:var(--black);
+  border:2px solid var(--cream);
+  color:var(--cream);
+  width:36px; height:36px;
+}
+.pagination button.active{
+  background:var(--pink);
+  border-color:var(--pink);
+  color:var(--black);
+}
+.pagination button:hover:not(.active){
+  border-color:var(--yellow); color:var(--yellow);
+}
+
+/* CTA strip */
+.cta-strip{
+  margin:46px 40px 0;
+  background:var(--yellow);
+  color:var(--black);
+  border:3px solid var(--black);
+  padding:26px 30px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  flex-wrap:wrap;
+}
+.cta-left{ display:flex; align-items:center; gap:16px; }
+.cta-left .glyph{ font-size:30px; }
+.cta-left h4{
+  font-family:var(--pixel-font);
+  font-size:15px;
+  margin-bottom:6px;
+}
+.cta-left p{
+  font-family:var(--mono-font);
+  font-size:18px;
+}
+.cta-strip .btn-dark{
+  font-family:var(--pixel-font);
+  font-size:11px;
+  background:var(--black);
+  color:var(--cream);
+  border:2px solid var(--black);
+  padding:13px 22px;
+  white-space:nowrap;
+}
+.cta-strip .btn-dark:hover{ background:var(--pink); border-color:var(--pink); color:var(--black); }
+
+/* ---------- footer ---------- */
+footer{
+  margin-top:50px;
+  border-top:4px solid var(--pink);
+  padding:22px 28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  flex-wrap:wrap;
+  font-family:var(--mono-font);
+  font-size:17px;
+}
+.terminal{
+  background:#0d0d0d;
+  border:2px solid #2a2a2a;
+  padding:12px 16px;
+  min-width:260px;
+  font-size:15px;
+  color:var(--green);
+}
+.terminal .cursor{
+  display:inline-block;
+  width:8px; height:14px;
+  background:var(--green);
+  margin-left:2px;
+  vertical-align:middle;
+  animation:blink 1s steps(1) infinite;
+}
+@keyframes blink{ 50%{ opacity:0; } }
+
+.fhc-mark{
+  width:58px; height:58px;
+  border:2px solid var(--pink);
+  border-radius:50%;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  font-family:var(--pixel-font);
+  color:var(--pink);
+  font-size:11px;
+  line-height:1.3;
+}
+.fhc-mark span{ font-size:7px; color:var(--cream); }
+
+.social-row{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+}
+.social-row .label{
+  font-family:var(--pixel-font);
+  font-size:10px;
+  color:var(--pink);
+}
+.social-icons{ display:flex; gap:10px; }
+.social-icons a{
+  width:34px; height:34px;
+  border:2px solid var(--cream);
+  display:flex; align-items:center; justify-content:center;
+  font-size:15px;
+}
+.social-icons a:hover{ border-color:var(--yellow); color:var(--yellow); }
+
+/* ---------- responsive ---------- */
+@media (max-width:1080px){
+  .grid{ grid-template-columns:repeat(2,1fr); }
+  .mascot-wrap{ display:none; }
+}
+@media (max-width:720px){
+  header{ flex-direction:column; align-items:flex-start; }
+  nav{ font-size:10px; gap:14px; }
+  .hero{ padding:40px 22px; }
+  h1.hero-title{ font-size:38px; }
+  .filters, .events-section, .cta-strip, .pagination{ padding-left:22px; padding-right:22px; }
+  .grid{ grid-template-columns:1fr; }
+  .cta-strip{ margin-left:22px; margin-right:22px; flex-direction:column; align-items:flex-start; }
+  footer{ flex-direction:column; align-items:flex-start; }
+  .social-row{ align-items:flex-start; }
+}
+</style>
+</head>
+<body>
+
+<div class="frame">
+
+  <header>
+    <div class="brand">
+      <div class="brand-badge"><span class="fhc pixel-font">FHC</span></div>
+      <div class="brand-sub">FULL FISAT<br>HORIZON CLUB</div>
+    </div>
+    <nav>
+      <a href="#" class="play">HOME</a>
+      <a href="#" class="active">EVENTS</a>
+      <a href="#">PROJECTS</a>
+      <a href="#">TEAM</a>
+      <a href="#">GALLERY</a>
+      <a href="#">ABOUT</a>
+    </nav>
+    <a href="#" class="join-btn">JOIN</a>
+  </header>
+
+  <section class="hero">
+    <div class="hero-stars" id="starfield"></div>
+    <div class="hero-inner">
+      <div class="eyebrow"><span class="bolt">⚡</span> FHC EVENTS &amp; PROGRAMS <span class="line"></span></div>
+      <h1 class="hero-title">Explore the<span class="accent">Events_</span></h1>
+      <p class="hero-desc">Workshops, hackathons, talks and everything else FHC is building together. Pick a track, save your spot.</p>
+    </div>
+    <div class="mascot-wrap">
+      <div class="speech-bubble">NEW EVENT<br>UNLOCKED!</div>
+      <svg width="110" height="120" viewBox="0 0 110 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="20" y="6" width="8" height="18" fill="#2a2a2a"/>
+        <circle cx="24" cy="6" r="5" fill="#FF1B7A"/>
+        <rect x="14" y="26" width="82" height="60" rx="6" fill="#F4EFE3" stroke="#0A0A0A" stroke-width="3"/>
+        <circle cx="40" cy="54" r="8" fill="#0A0A0A"/>
+        <circle cx="70" cy="54" r="8" fill="#0A0A0A"/>
+        <circle cx="42" cy="52" r="2.5" fill="#3AA6FF"/>
+        <circle cx="72" cy="52" r="2.5" fill="#3AA6FF"/>
+        <rect x="0" y="94" width="26" height="20" rx="4" fill="#F4EFE3" stroke="#0A0A0A" stroke-width="3"/>
+        <rect x="84" y="94" width="26" height="20" rx="4" fill="#F4EFE3" stroke="#0A0A0A" stroke-width="3"/>
+        <rect x="30" y="90" width="50" height="26" rx="6" fill="#F4EFE3" stroke="#0A0A0A" stroke-width="3"/>
+      </svg>
+    </div>
+  </section>
+
+  <div class="status-toggle" role="tablist" aria-label="Event time filter">
+    <button class="active" type="button" data-status="upcoming">UPCOMING</button>
+    <button type="button" data-status="past">PAST</button>
+  </div>
+
+  <div class="filters" role="tablist" aria-label="Event category filter">
+    <button class="filter-pill active" data-cat="all">ALL</button>
+    <button class="filter-pill" data-cat="workshop">WORKSHOPS</button>
+    <button class="filter-pill" data-cat="hackathon">HACKATHONS</button>
+    <button class="filter-pill" data-cat="talk">TECH TALKS</button>
+    <button class="filter-pill" data-cat="event">EVENTS</button>
+    <button class="filter-pill" data-cat="social">FUN MOMENTS</button>
+  </div>
+
+  <section class="events-section">
+    <div class="grid" id="eventGrid">
+      <!-- Cards injected by JS from data below -->
+    </div>
+
+    <div class="empty-state" id="emptyState">
+      <div class="glyph">📭</div>
+      <h3>NO EVENTS FOUND</h3>
+      <p>Nothing here yet for this filter. Check back soon, or try a different category.</p>
+    </div>
+
+    <div class="pagination" id="pagination"></div>
+  </section>
+
+  <div class="cta-strip">
+    <div class="cta-left">
+      <div class="glyph">🎮</div>
+      <div>
+        <h4>GOT AN EVENT IDEA?</h4>
+        <p>Pitch a workshop, talk or hackathon to the FHC team.</p>
+      </div>
+    </div>
+    <a href="#" class="btn-dark">▶ SUBMIT AN IDEA</a>
+  </div>
+
+  <footer>
+    <div class="terminal">
+      &gt; FHC_TERMINAL<br>
+      &gt; Loading events feed...<br>
+      &gt; <span id="eventCountMsg">12</span> events found. Ready<span class="cursor"></span>
+    </div>
+    <div class="fhc-mark">FHC<span>v2.6</span></div>
+    <div class="social-row">
+      <div class="label">CONNECT WITH US</div>
+      <div class="social-icons">
+        <a href="#" aria-label="GitHub">⌨</a>
+        <a href="#" aria-label="LinkedIn">in</a>
+        <a href="#" aria-label="Instagram">◎</a>
+        <a href="#" aria-label="Email">✉</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+/* ---------------------------------------------------------
+   Placeholder event data.
+   Replace/populate this array from your backend/database —
+   each object maps 1:1 onto the card markup below.
+--------------------------------------------------------- */
+const EVENTS = [
+  {
+    id:1, status:'upcoming', category:'workshop', tag:'WORKSHOP', icon:'💻',
+    title:'Web Dev Workshop', date:'JUN 15, 2026', time:'10:00 AM',
+    location:'Lab 3, CSE Block', price:'FREE',
+    desc:'Hands-on session on modern web development — HTML, CSS, JS and your first deploy.'
+  },
+  {
+    id:2, status:'upcoming', category:'talk', tag:'TECH TALK', icon:'💬',
+    title:'AI Explorer Talk', date:'JUN 28, 2026', time:'2:00 PM',
+    location:'Main Seminar Hall', price:'FREE',
+    desc:'A session on the future of AI and its real-world applications, with live Q&A.'
+  },
+  {
+    id:3, status:'upcoming', category:'hackathon', tag:'HACKATHON', icon:'🏆',
+    title:'Code Horizon 3.0', date:'JUL 10, 2026', time:'9:00 AM',
+    location:'IDEA Lab, FISAT', price:'₹99',
+    desc:'Intra-college coding competition. Solve. Code. Win. Repeat. 24 hours on the clock.'
+  },
+  {
+    id:4, status:'upcoming', category:'talk', tag:'TECH TALK', icon:'🎤',
+    title:'Industry Career Talk', date:'JUL 24, 2026', time:'11:00 AM',
+    location:'Auditorium', price:'FREE',
+    desc:'Talk by industry experts on emerging tech and career guidance for students.'
+  },
+  {
+    id:5, status:'upcoming', category:'workshop', tag:'WORKSHOP', icon:'🔐',
+    title:'Cyber Security 101', date:'AUG 02, 2026', time:'10:30 AM',
+    location:'Lab 2, CSE Block', price:'₹49',
+    desc:'Intro to ethical hacking, common exploits, and how to defend against them.'
+  },
+  {
+    id:6, status:'upcoming', category:'social', tag:'FUN MOMENTS', icon:'🎮',
+    title:'FHC Game Night', date:'AUG 14, 2026', time:'6:00 PM',
+    location:'Student Lounge', price:'FREE',
+    desc:'Because the best memories happen off the screen. Snacks, games, good company.'
+  },
+  {
+    id:7, status:'past', category:'event', tag:'EVENT', icon:'🤖',
+    title:'IDEA Lab Launch', date:'MAR 10, 2026', time:'10:30 AM',
+    location:'Main Seminar Hall, FISAT', price:'FREE',
+    desc:'The official inauguration of the AICTE IDEA Lab, celebrating a new space for creativity and innovation.'
+  },
+  {
+    id:8, status:'past', category:'hackathon', tag:'HACKATHON', icon:'🏆',
+    title:'Code Horizon 2.0', date:'NOV 18, 2025', time:'9:00 AM',
+    location:'IDEA Lab, FISAT', price:'₹45',
+    desc:'24 hours of code, coffee and collaboration across 40+ teams.'
+  },
+  {
+    id:9, status:'past', category:'event', tag:'EVENT', icon:'❤',
+    title:'Code For Good', date:'OCT 05, 2025', time:'8:00 AM',
+    location:'FISAT Campus', price:'FREE',
+    desc:'Using technology to make a positive impact — a day of community-driven builds.'
+  }
+];
+
+const grid = document.getElementById('eventGrid');
+const emptyState = document.getElementById('emptyState');
+const paginationEl = document.getElementById('pagination');
+const eventCountMsg = document.getElementById('eventCountMsg');
+
+let currentStatus = 'upcoming';
+let currentCategory = 'all';
+let currentPage = 1;
+const PAGE_SIZE = 6;
+
+function statusPillMarkup(status){
+  if(status === 'upcoming') return `<div class="status-pill upcoming"><span class="dot"></span>UPCOMING</div>`;
+  if(status === 'past') return `<div class="status-pill concluded"><span class="dot"></span>CONCLUDED</div>`;
+  return `<div class="status-pill live"><span class="dot"></span>LIVE</div>`;
+}
+
+function tagClass(cat){
+  return {
+    workshop:'workshop', hackathon:'hackathon', talk:'talk', event:'event', social:'social'
+  }[cat] || 'event';
+}
+
+function priceMarkup(price){
+  const free = /free/i.test(price);
+  return `<span class="price-pill ${free ? 'free' : ''}">${free ? 'FREE' : price}</span>`;
+}
+
+function cardTemplate(ev){
+  return `
+    <article class="card" data-status="${ev.status}" data-category="${ev.category}">
+      <div class="card-media">
+        <div class="media-fallback">[ EVENT IMAGE ]</div>
+        <span class="tag ${tagClass(ev.category)}">${ev.tag}</span>
+        <div class="card-icon">${ev.icon}</div>
+        ${statusPillMarkup(ev.status)}
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">${ev.title}</h3>
+        <p class="card-desc">${ev.desc}</p>
+        <div class="card-meta">
+          <div class="row">📅 ${ev.date} · ${ev.time}</div>
+          <div class="row">📍 ${ev.location}</div>
+        </div>
+        <div class="card-footer">
+          ${priceMarkup(ev.price)}
+          <a href="#" class="details-btn">VIEW DETAILS →</a>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function getFiltered(){
+  return EVENTS.filter(ev =>
+    ev.status === currentStatus &&
+    (currentCategory === 'all' || ev.category === currentCategory)
+  );
+}
+
+function render(){
+  const filtered = getFiltered();
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  currentPage = Math.min(currentPage, totalPages);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + PAGE_SIZE);
+
+  if(pageItems.length === 0){
+    grid.style.display = 'none';
+    emptyState.style.display = 'flex';
+  } else {
+    grid.style.display = 'grid';
+    emptyState.style.display = 'none';
+    grid.innerHTML = pageItems.map(cardTemplate).join('');
+  }
+
+  eventCountMsg.textContent = filtered.length;
+  renderPagination(totalPages);
+}
+
+function renderPagination(totalPages){
+  if(totalPages <= 1){ paginationEl.innerHTML = ''; return; }
+  let html = `<button data-page="prev" aria-label="Previous page">‹</button>`;
+  for(let p = 1; p <= totalPages; p++){
+    html += `<button data-page="${p}" class="${p === currentPage ? 'active' : ''}">${p}</button>`;
+  }
+  html += `<button data-page="next" aria-label="Next page">›</button>`;
+  paginationEl.innerHTML = html;
+}
+
+paginationEl.addEventListener('click', e => {
+  const btn = e.target.closest('button[data-page]');
+  if(!btn) return;
+  const val = btn.dataset.page;
+  const filtered = getFiltered();
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  if(val === 'prev') currentPage = Math.max(1, currentPage - 1);
+  else if(val === 'next') currentPage = Math.min(totalPages, currentPage + 1);
+  else currentPage = parseInt(val, 10);
+  render();
+  document.querySelector('.events-section').scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+document.querySelectorAll('.status-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.status-toggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentStatus = btn.dataset.status;
+    currentPage = 1;
+    render();
+  });
+});
+
+document.querySelectorAll('.filter-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCategory = btn.dataset.cat;
+    currentPage = 1;
+    render();
+  });
+});
+
+/* tiny starfield accent in hero, matches the '+' sprinkle motif */
+(function starfield(){
+  const field = document.getElementById('starfield');
+  const glyphs = ['+','+','✦','+'];
+  const colors = ['#FF1B7A','#FFC93C','#3AA6FF','#39C46B','#F4EFE3'];
+  for(let i = 0; i < 22; i++){
+    const s = document.createElement('span');
+    s.className = 'star';
+    s.textContent = glyphs[Math.floor(Math.random()*glyphs.length)];
+    s.style.left = Math.random()*100 + '%';
+    s.style.top = Math.random()*100 + '%';
+    s.style.color = colors[Math.floor(Math.random()*colors.length)];
+    s.style.fontSize = (10 + Math.random()*10) + 'px';
+    field.appendChild(s);
+  }
+})();
+
+render();
+</script>
+
+</body>
+</html>

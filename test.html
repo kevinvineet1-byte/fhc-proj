@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event — FHC</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+  :root{
+    --pink:#FF1F7A;
+    --yellow:#FFD400;
+    --blue:#2FB8FF;
+    --green:#3ED985;
+    --black:#0B0B0F;
+    --white:#F5F0E8;
+    --paper:#111116;
+  }
+
+  *{box-sizing:border-box;}
+  html{ image-rendering:pixelated; }
+
+  body{
+    margin:0;
+    background:var(--black);
+    background-image:radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+    background-size:22px 22px;
+    color:var(--white);
+    font-family:'VT323', monospace;
+    font-size:20px;
+    line-height:1.5;
+  }
+  .pixel-font{ font-family:'Press Start 2P', monospace; }
+
+  /* ---------- pixel border utility (steps instead of smooth radius) ---------- */
+  .pixel-border{
+    border:4px solid var(--black);
+    box-shadow:
+      0 0 0 4px var(--pink);
+    position:relative;
+  }
+  .pixel-border::before{
+    content:"";
+    position:absolute;
+    inset:-8px;
+    border:4px solid var(--pink);
+    clip-path: polygon(
+      0% 8px, 8px 8px, 8px 0%, calc(100% - 8px) 0%, calc(100% - 8px) 8px, 100% 8px,
+      100% calc(100% - 8px), calc(100% - 8px) calc(100% - 8px), calc(100% - 8px) 100%,
+      8px 100%, 8px calc(100% - 8px), 0% calc(100% - 8px)
+    );
+    pointer-events:none;
+  }
+
+  .frame{
+    max-width:720px;
+    margin:16px auto;
+    border:6px solid var(--pink);
+    box-shadow:0 0 0 3px var(--black), 0 0 0 9px var(--pink), 8px 8px 0 9px rgba(255,31,122,0.25);
+    background:var(--black);
+  }
+
+  /* ---------- nav ---------- */
+  header{
+    background:var(--black);
+    border-bottom:5px solid var(--pink);
+    padding:14px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:12px;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .logo-box{
+    border:4px solid var(--pink);
+    background:var(--black);
+    padding:6px 12px;
+    box-shadow:4px 4px 0 var(--pink);
+  }
+  .logo-box .pixel-font{ color:var(--pink); font-size:18px; }
+  .brand-sub{ font-size:12px; letter-spacing:2px; opacity:0.85; text-transform:uppercase; }
+  nav.links{ display:flex; gap:14px; flex-wrap:wrap; font-size:14px; letter-spacing:1px; }
+  nav.links a{ color:var(--white); text-decoration:none; text-transform:uppercase; opacity:0.85; }
+  nav.links a.active{ background:var(--pink); color:var(--black); padding:4px 8px; border:3px solid var(--black); }
+
+  /* ---------- back + breadcrumb ---------- */
+  .topbar{
+    padding:16px 20px 0;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:10px;
+  }
+  .back-btn{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--black);
+    border:3px solid var(--green);
+    color:var(--green);
+    padding:7px 12px;
+    text-decoration:none;
+    font-size:14px; letter-spacing:1px;
+    box-shadow:3px 3px 0 var(--green);
+  }
+  .back-btn:hover{ transform:translate(-1px,-1px); box-shadow:4px 4px 0 var(--green); }
+  .breadcrumb{
+    font-size:13px; letter-spacing:2px; color:var(--yellow);
+    text-transform:uppercase;
+    display:flex; align-items:center; gap:8px;
+  }
+  .breadcrumb .sep{ color:var(--pink); }
+
+  /* ---------- hero banner (pixel-bordered, 8-bit sprite scene) ---------- */
+  .hero-banner{
+    margin:18px 20px 0;
+    position:relative;
+    border:4px solid var(--black);
+    box-shadow:0 0 0 4px var(--yellow), 6px 6px 0 4px var(--pink);
+    height:240px;
+    overflow:hidden;
+    background:
+      repeating-linear-gradient(0deg, #1a0d24 0 4px, #170a20 4px 8px),
+      linear-gradient(180deg, #2a1140 0%, #17081f 60%, #0d0512 100%);
+  }
+  .hero-banner .stars{
+    position:absolute; inset:0;
+    background-image:
+      radial-gradient(2px 2px at 20px 30px, var(--yellow), transparent),
+      radial-gradient(2px 2px at 80px 70px, var(--blue), transparent),
+      radial-gradient(2px 2px at 150px 40px, var(--white), transparent),
+      radial-gradient(2px 2px at 220px 90px, var(--pink), transparent),
+      radial-gradient(2px 2px at 300px 20px, var(--yellow), transparent),
+      radial-gradient(2px 2px at 380px 110px, var(--white), transparent),
+      radial-gradient(2px 2px at 450px 50px, var(--blue), transparent);
+    background-repeat:repeat;
+    background-size:480px 140px;
+    opacity:0.8;
+  }
+  .hero-topline{
+    position:absolute; top:0; left:0; right:0; height:6px;
+    background:repeating-linear-gradient(90deg, var(--yellow) 0 14px, var(--black) 14px 20px);
+  }
+  .hero-glyph{
+    position:absolute;
+    right:8%; bottom:0;
+    font-size:130px;
+    line-height:1;
+    filter:drop-shadow(6px 6px 0 rgba(0,0,0,0.6));
+  }
+  .date-badge{
+    position:absolute; top:16px; right:16px;
+    background:var(--black);
+    border:3px solid var(--yellow);
+    box-shadow:4px 4px 0 var(--yellow);
+    padding:10px 14px;
+    text-align:center;
+  }
+  .date-badge .mon{
+    font-family:'Press Start 2P', monospace;
+    font-size:10px; color:var(--yellow); letter-spacing:1px;
+  }
+  .date-badge .day{
+    font-family:'Press Start 2P', monospace;
+    font-size:24px; color:var(--white); margin:6px 0;
+  }
+  .date-badge .yr{ font-size:13px; color:var(--white); opacity:0.7; }
+
+  /* ---------- title block ---------- */
+  .title-block{ padding:24px 20px 0; }
+  .eyebrow-row{
+    font-size:13px; letter-spacing:2px; color:var(--blue);
+    text-transform:uppercase; margin-bottom:10px;
+    display:flex; gap:10px; align-items:center;
+  }
+  .eyebrow-row .sep{ color:var(--pink); }
+
+  h1.title{
+    font-size:38px; line-height:1.1; margin:0 0 14px;
+    color:var(--white);
+    text-shadow:4px 4px 0 var(--pink);
+    letter-spacing:1px;
+  }
+  .title-accent{ color:var(--yellow); }
+
+  .badges{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+  .badge{
+    font-family:'Press Start 2P', monospace;
+    font-size:10px; padding:8px 10px; border:3px solid var(--black);
+  }
+  .badge.status-open{ background:var(--green); color:var(--black); }
+  .badge.status-closed{ background:var(--pink); color:var(--black); }
+  .badge.price{ background:var(--yellow); color:var(--black); }
+
+  .desc{
+    font-size:20px; opacity:0.92; max-width:60ch;
+    margin-bottom:22px;
+  }
+
+  /* ---------- pixel dashed divider ---------- */
+  .divider{
+    margin:0 20px;
+    height:4px;
+    background-image:repeating-linear-gradient(90deg, var(--pink) 0 10px, transparent 10px 20px);
+  }
+
+  /* ---------- info grid ---------- */
+  .info-grid{
+    padding:24px 20px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:22px 30px;
+  }
+  @media (max-width:520px){ .info-grid{grid-template-columns:1fr;} }
+  .info-item{ display:flex; flex-direction:column; gap:6px; }
+  .info-label{
+    font-family:'Press Start 2P', monospace;
+    font-size:10px; color:var(--yellow); letter-spacing:1px;
+  }
+  .info-value{
+    font-size:22px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .info-value .icon{ font-size:18px; }
+
+  /* ---------- status note ---------- */
+  .status-note{
+    margin:0 20px 24px;
+    background:var(--paper);
+    border:3px solid var(--pink);
+    box-shadow:5px 5px 0 var(--pink);
+    padding:16px 18px;
+  }
+  .status-note.open{ border-color:var(--green); box-shadow:5px 5px 0 var(--green); }
+  .status-note p{ margin:0 0 6px; font-size:19px; }
+  .status-note p:last-child{ margin-bottom:0; opacity:0.7; font-size:15px; }
+
+  /* ---------- CTA ---------- */
+  .cta-wrap{ padding:0 20px 26px; }
+  .btn{
+    font-family:'Press Start 2P', monospace;
+    font-size:13px; padding:16px 22px;
+    text-decoration:none; border:3px solid var(--black);
+    display:inline-flex; align-items:center; gap:10px;
+    cursor:pointer; width:100%; justify-content:center;
+  }
+  .btn-primary{
+    background:var(--pink); color:var(--black);
+    box-shadow:5px 5px 0 var(--black);
+  }
+  .btn-primary:hover{ transform:translate(-2px,-2px); box-shadow:7px 7px 0 var(--black); }
+  .btn-disabled{
+    background:#2a2a2a; color:#777;
+    box-shadow:5px 5px 0 var(--black);
+    cursor:not-allowed;
+  }
+
+  /* ---------- footer strip ---------- */
+  .foot-strip{
+    border-top:5px solid var(--pink);
+    padding:14px 20px;
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:10px;
+    font-size:13px; letter-spacing:1px;
+    text-transform:uppercase;
+    opacity:0.7;
+  }
+
+  ::selection{ background:var(--pink); color:var(--black); }
+</style>
+</head>
+<body>
+
+<div class="frame">
+
+  <header>
+    <div class="brand">
+      <div class="logo-box"><span class="pixel-font">FHC</span></div>
+      <div>
+        <div class="brand-sub">FULL FISAT</div>
+        <div class="brand-sub">HORIZON CLUB</div>
+      </div>
+    </div>
+    <nav class="links">
+      <a href="#">▶ HOME</a>
+      <a href="#" class="active">EVENTS</a>
+      <a href="#">PROJECTS</a>
+      <a href="#">TEAM</a>
+      <a href="#">GALLERY</a>
+    </nav>
+  </header>
+
+  <div class="topbar">
+    <a href="#" class="back-btn">← BACK</a>
+    <div class="breadcrumb">FHC EVENTS <span class="sep">·</span> THURSDAY</div>
+  </div>
+
+  <div class="hero-banner">
+    <div class="hero-topline"></div>
+    <div class="stars"></div>
+    <div class="hero-glyph">🏆</div>
+    <div class="date-badge">
+      <div class="mon">AUG</div>
+      <div class="day">13</div>
+      <div class="yr">2026</div>
+    </div>
+  </div>
+
+  <div class="title-block">
+    <div class="eyebrow-row">FHC IDEA LAB <span class="sep">·</span> HACKATHON</div>
+    <h1 class="title">CODE <span class="title-accent">HORIZON 3.0</span></h1>
+    <div class="badges">
+      <span class="badge status-closed">■ REGISTRATION CLOSED</span>
+      <span class="badge price">₹45</span>
+    </div>
+    <p class="desc">
+      Intra-college coding competition. Solve. Code. Win. Repeat. 24 hours of
+      code, coffee and collaboration — build real solutions and battle for the
+      top spot on the leaderboard.
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="info-grid">
+    <div class="info-item">
+      <span class="info-label">DATE &amp; TIME</span>
+      <span class="info-value"><span class="icon">📅</span>8/13/2026, 8:01 PM</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">VENUE</span>
+      <span class="info-value"><span class="icon">📍</span>FISAT Main Campus</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">REG. DEADLINE</span>
+      <span class="info-value"><span class="icon">⏰</span>10 August 2026</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">ADMISSION</span>
+      <span class="info-value"><span class="icon">🎟</span>Paid · ₹45</span>
+    </div>
+  </div>
+
+  <div class="status-note">
+    <p>Registration has closed for this event.</p>
+    <p>Your registration will appear in your dashboard once confirmed.</p>
+  </div>
+
+  <div class="cta-wrap">
+    <a href="#" class="btn btn-disabled">REGISTRATION CLOSED</a>
+  </div>
+
+  <div class="foot-strip">
+    <span>YOUR TICKET ID IS UNIQUE TO THIS EVENT</span>
+    <span>POWERED BY FHC</span>
+  </div>
+
+</div>
+
+</body>
+</html>
